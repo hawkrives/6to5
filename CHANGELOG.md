@@ -11,892 +11,825 @@
 
 _Note: Gaps between patch versions are faulty/broken releases._
 
-## 3.1.0
+See [CHANGELOG - 6to5](CHANGELOG-6to5.md) for the pre-4.0.0 version changelog.
+
+## 5.5.5
+
+ * **Bug Fix**
+  * Fix `file.opts` not being set before `file.log.deprecate` was called causing a `ReferenceError` as it was checking for a property on it.
+
+## 5.5.4
+
+ * **Bug Fix**
+  * Add back missing `shouldIgnore` check.
+  * Log message on deprecated options rather than throw an error.
+  * Fix name of `auxiliaryComment` option when attempting Istanbul interop in `babel/register`.
+
+## 5.5.3
+
+ * **Bug Fix**
+  * Fix weird state bug when traversing overa  `node` `ClassProperty` instead of `path` in the `es6.classes` transformer.
+
+## 5.5.2
+
+ * **Bug Fix**
+  * Fix `NodePath#isPure` on `Property` nodes.
+  * Use cwd instead of entry file directory when working out relative directory for `babel/register`.
+ * **Internal**
+  * Add scary warning for those few who choose to use the WIP experimental transformers.
+
+## 5.5.1
+
+ * **Bug Fix**
+  * Remove `ClassProperty` nodes always in the `Flow` transformer. This is fine now since class properties aren't supported in any engine that supports classes but the `es7.classProperties` transformer will need to be updated in the future to desugar to ES6 classes instead of relying on the `es6.classes` transformer from being ran.
+
+## 5.5.0
+
+ * **Bug Fix**
+  * Allow pushing declarations to `SwitchStatement`s.
+  * Fix `minification.removeDebugger` to remove `DebuggerStatement`s rather than `ExpressionStatement`s with an identifier of `debugger`.
+  * Check LHS in `ForInStatement` and `ForOfStatement` for constant violations.
+  * Register function `id` as a reference when naming methods to avoid collisions.
+  * Support key literals when checking for the existence of `displayName` property when attempting to add it for `React.createClass`.
+  * Remove `ExportDefaultSpecifier` check from `t.isDefaultSpecifier`.
+  * Don't consider `JSXIdentifier` HTML tag identifiers to be references.
+ * **Polish**
+  * Update `minification.deadCodeElimination` transformer to remove all statements after completion statements.
+  * Update `minification.deadCodeElimination` transformer to not inline single used bindings that exist in different scopes.
+  * When performing Istanbul interop in `babel/register`, add the auxiliary comment `"istanbul ignore text"` to get more accurate coverage.
+  * Add `--nolazy` argument to `babel-node`.
+  * Add support for `cluster` forking.
+  * Perform scope tracking in a single pass instead of multiple.
+  * Smarten up type inferrence and resolution to support the whole array of language constructs.
+  * Optimise module metadata retrieval into a single pass.
+  * Ignore trailing commas when inferring newlines.
+  * Rename `minification.inlineExpressions` transformer to `minification.constantFolding`.
+  * Check path relative to entry file when checking to see if we're inside `node_modules` when using `babel/register`.
+  * Upgrade `regenerator`.
+
+## 5.4.7
+
+ * **Bug Fix**
+  * Don't consider `JSXAttribute` `names` to be valid `ReferencedIdentifier`s.
+
+## 5.4.6
+
+ * **Bug Fix**
+  * Fix `spec.functionName` transformer incorrectly attempting to rename a binding that doesn't exist as it's a global.
+ * **Internal**
+  * Deprecate custom module formatters.
+
+## 5.4.5
+
+ * **Bug Fix**
+  * Add `JSXIdentifier` as a valid `ReferencedIdentifier` visitor virtual type.
+  * Ignore `CallExpression` `_prettyCall` when the `retainLines` option is enabled.
+  * Inherit comments to new declaration node when exploding module declarations.
+  * Fix `es6.tailCall` transformer failing on calls that exceed the max parameters of the function.
+
+## 5.4.4
+
+ * **Bug Fix**
+  * Fix bug where replacing variable declarations in the head of a `for` loop would turn them into `ExpressionStatement`s.
+  * Fix renaming of assignment expressions that were non-identifiers ie. patterns.
+  * Force space before `class` `id` to avoid breaking named classes when using `compact` mode.
+  * Add assignment pattern explosion to avoid initial duplicate nodes.
+  * Ignore this and arguments when performing TCO on shadowed functions.
+ * **Polish**
+  * Rename `sourceMapName` option to `sourceMapTarget`. Thanks [@getify](https://github.com/getify)!
+  * Better detection of completion records, ignore those in `Function`s.
+  * Clarified descriptions of the options that are enabled by default.
+  * Resolve `\`babel-plugin-${name}\`` plugin names **before** just checking the `name`. Thanks [@jquense](https://github.com/jquense)!
+  * Update AMD module formatter to add import default remapping.
+
+## 5.4.3
+
+ * **Bug Fix**
+  * Fix `module` being incorrectly rewritten when used as in an export declaration.
+  * When performing single-reference inlining, ensure that the single reference isn't a child of the binding itself.
+  * Fix a bug in `minification.deadCodeElimination` where a new binding instance was being created for local class bindings instead of just inheriting the parent one.
+  * Fix bug with paren printing in `compact` and `retainLines` mode where a left paren was already printed before catching up.
+ * **Internal**
+  * Handle contexts for paths much better. This will ensure that the path node location info is in sync.
+
+## 5.4.2
+
+ * **Polish**
+  * `ignore` and `only` patterns are now **very** liberal. The pattern can now exist anywhere in the path.
+
+## 5.4.1
+
+ * **Bug Fix**
+  * Add missing `slash` dependency. Thanks [@browncolyn](https://github.com/browncolyn)!
+ * **Polish**
+  * Clean up `shouldIgnore` algorithm to work how you'd expect rather than being a hacky piece of shit. It now crawls the entire path, checking each section of it against the input ignore/only patterns. This means that the pattern `foo` will ignore the paths `foo/bar.js`, `bar/foo` etc.
+
+## 5.4.0
+
+ * **New Feature**
+  * Added [function bind syntax](https://github.com/zenparsing/es-function-bind) behind stage 0. Thanks [@RReverser](https://github.com/rreverser)!
+  * Added `env` option. Especially handy when using the `.babelrc`.
+ * **Bug Fix**
+  * Fix files not properly being ignored when `babel.transform` ignores them when using `$ babel`.
+  * Fix scope tracking registering loop head bindings to their `VariableDeclaration` instead of `VariableDeclarator`.
+ * **Polish**
+  * Normalise path separators for souce map paths when using `$ babel`.
+  * Rework `PathHoister` to ignore global references and to not deopt on reassignments to referenced bindings, instead it tries to hoist to the highest scope.
+  * Added missing exponential operator inlining. Thanks [@nkt](https://github.com/nkt)!
+  * Optimise `regenerator` transformer. Thanks [@benjamn](https://github.com/benjamn)!
+
+## 5.3.3
+
+ * **Bug Fix**
+  * Fix `minification.deadCodeElimination` transformer incorrectly trying to inline import declarations.
+  * Fix `minification.inlineExpression` transformer getting into an infinite loop.
+
+## 5.3.2
+
+ * **Bug Fix**
+  * Fix patterns not being considered when hoisting variables in the `es6.blockScoping` transformer.
+
+## 5.3.1
+
+ * **Bug Fix**
+  * Fix unique export specifiers not being cloned when exploding class and function exports,
+ * **Polish**
+  * Turn import remaps to sequence expressions to remove their context and improve performance.
+
+## 5.3.0
+
+**Speeeeeeed**
+
+![gifs lol](https://31.media.tumblr.com/568205a0e37ae15eca510fa639589a59/tumblr_n8kw8kpcSb1sg6cg8o1_500.gif)
+
+ * **Spec Compliancy**
+  * Allow trailing param commas for methods when using the `es7.trailingCommas` transformer.
+ * **Bug Fix**
+  * Fix `es6.blockScoping` transformer not properly ignoring `break` in `SwitchCase`.
+  * Fix lookahead context saving to avoid weird tokenizer state.
+  * Explode duplicate identifiers in export/import specifiers and property shorthand to create unique objects.
+  * Skip loose mode for class methods when they have decorators.
+  * When removing nodes, share their comments with their siblings.
+  * Properly hoist temp param declarations when doing TCO.
+ * **Internal**
+  * Add `--harmony_generators` flag to `$ babel-node`.
+  * Internal AST traversals have been minimised **drastically**. Transformers have been grouped together which means entire tree traversals are much fewer. Visiting nodes is now also skipped if the traversal context can detect that the handler is a noop. This sames precious cycles as it avoids constructing traversal paths and creating a new traversal context. See issues [#1472](https://github.com/babel/babel/issues/1472) and [#1486](https://github.com/babel/babel/issues/1486) for related discussion.
+ * **Polish**
+  * Move many `utility` transformers to `minification`.
+
+## 5.2.17
+
+ * **Bug Fix**
+  * Fix auxiliary comments not properly being attached to function declaration helpers.
+  * Add `Super` node type to `ast-types` patch.
+  * Ignore parameter bindings when attempting to inline them in the `minification.deadCodeElimination` transformer.
+  * Correct `extensions` arguments when using the Babel CLI.
+
+## 5.2.16
+
+ * **Bug Fix**
+  * Fix plugins being disabled when using the whitelist.
+  * Fix correct function scope being passed to `nameMethod.property` when inferring the function name for class methods.
+  * Fix incorrect extensions reference causing weird issues when using the Babel CLI.
+  * Fix destructuring param reference replacements not inheriting from their original param.
+ * **Spec Compliancy**
+  * Fix order that method decorators are ran in.
+
+## 5.2.15
+
+ * **Bug Fix**
+  * Fix initializer descriptor add attempt if it doesn't exist.
+
+## 5.2.14
+
+ * **Bug Fix**
+  * Fix bug with initializer decorators where the descriptors weren't being defined if there was no `initializer` property.
+ * **Internal**
+  * Expose `retainLines` option to CLI.
+  * Fix `retainLines` option not being taken into consideration when doing multiple variable declaration declarators generation.
+  * Expose minified and unminified copies of dist scripts.
+
+## 5.2.13
+
+ * **Bug Fix**
+  * Fix `ExportDeclaration`s being incorrectly removed when using the `utility.deadCodeElimination` transformer.
+  * Fix position of `utility` transformers.
+ * **New Feature**
+  * Add built-in `esquery` support.
+ * **Internal**
+  * Consolidate notion of "virtual types".
+
+## 5.2.12
+
+ * **Polish**
+  * Make UID generation based on module declarations **much** nicer.
+ * **Internal**
+  * Remove internal check for traversal path replacement of self. This is a pattern that **could** come up in the wild and it could lead to pretty nasty code and may lead to internal regressions as the test coverage isn't 100% :( Instead, just put it in the fast path.
+
+## 5.2.11
+
+ * **Internal**
+  * Rename `getModuleName` option to `getModuleId`, doh.
+
+## 5.2.10
+
+ * **Bug Fix**
+  * Fix numerous issues in `replaceWithSourceString`. Thanks [@pangratz](https://github.com/pangratz)!
+ * **New Feature**
+  * Add `getModuleName` option. Thanks [@jayphelps](https://github.com/jayphelps)!
+
+## 5.2.9
+
+ * **Bug Fix**
+  * Fix `_blockHoist` transformer incorrectly sorting nodes on shitty environments that aren't spec compliant in their key order.
+  * Fix broken `parse` API method reference to an undeclared import.
+
+## 5.2.7
+
+ * **Bug Fix**
+  * Move `utility.deadCodeElimination` transformer up to avoid race conditions.
+  * Fix shorthand property scope binding renaming.
+ * **Polish**
+  * Turn helper variable declarations into function declarations if possible.
+ * **Internal**
+  * Removed native inheritance support from classes.
+  * Added `replaceWithSourceString` path API.
+  * Split up `es3.propertyLiterals` and `es3.memberExpressionLiterals` transformers to `minfication.propertyLiterals` and `es3.memberExpressionLiterals`.
+
+## 5.2.6
+
+ * **Internal**
+  * Fix transformer aliases being accidently set as deprecated ones.
+  * Expose `Pipeline` as `TransformerPipeline` instead.
+
+## 5.2.5
+
+ * **Bug Fix**
+  * Fix `parse` API not adding all the correct pipeline transformers.
+
+## 5.2.4
+
+ * **Bug Fix**
+  * Fix race condition with the Node API being loaded awkwardly and not being able to initialise itself when used in the browser.
+ * **Internal**
+  * Expose `transform.pipeline`.
+
+## 5.2.3
+
+ * **Bug Fix**
+  * Fix plugin containers being called with an undefined import. Thanks [@timbur](https://github.com/timbur)!
+  * Allow Flow object separators to be commas. Thanks [@monsanto](https://github.com/monsanto)!
+  * Add missing `Statement` and `Declaration` node aliases to flow types.
+
+## 5.2.2
+
+ * **Internal**
+  * Allow `util.arrayify` to take arbitrary types and coerce it into an array.
+
+## 5.2.1
+
+ * **Bug Fix**
+  * Fix regression in `node/register` that caused `node_modules` to not be ignored.
+
+## 5.2.0
+
+ * **Bug Fix**
+  * Fix plugin strings splitting arbitrarily on `:` which caused full paths on Windows to fail as they include `:` after the drive letter.
+  * Call class property `initializer`s with their target instead of their descriptor.
+  * Fix `ignore` and `only` not properly working on Windows path separators. Thanks [@stagas](https://github.com/stagas)!
+  * Fix `resolveRc` running on files twice causing issues. Thanks [@lukescott](https://github.com/lukescott)!
+  * Fix shorthand properties not correctly being target for `isReferenced` checks. Thanks [@monsanto](https://github.com/monsanto)!
+ * **Polish**
+  * Allow passing an array of globs to `babel/register` `only` and `ignore` options. Thanks [@Mark-Simulacrum](https://github.com/Mark-Simulacrum)!
+  * When inferring function names that collide with upper bindings, instead of doing the wrapper, instead rename them.
+  * Consider constant-like variable declaration functions to always refer to themselves so TOC can be performed.
+  * Process globs manually when using `$ babel` as some shells such as Windows don't explode them. Thanks [@jden](https://github.com/jden)!
+  * Add alternative way to execute plugins via a closure that's called with the current Babel instance.
+ * **Internal**
+  * Remove multiple internal transformers in favor of directly doing things when we need to. Previously, declarations such as `_ref` that we needed to create in specific scopes were done at the very end via the `_declarations` transformer. Now, they're done and added to the scope **right** when they're needed. This gets rid of the crappy `_declarations` property on scope nodes and fixes the crappy regenerator bug where it was creating a new `BlockStatement` so the declarations were being lost.
+  * Rework transformer traversal optimisation. Turns out that calling a `check` function for **every single node** in the AST is ridiculously expensive. 300,000 nodes timesed by ~30 transformers meant that it took tens of seconds to perform while it's quicker to just do the unnecessary traversal. Seems obvious in hindsight.
+ * **New Feature**
+  * Add `jscript` transformer that turns named function expressions into function declarations to get around [JScript's horribly broken function expression semantics](https://kangax.github.io/nfe/#jscript-bugs). Thanks [@kondi](https://github.com/kondi)!
+  * Add `@@hasInstance` support to objects when using the `es6.spec.symbols` transformer.
+  * Add `retainLines` option that retains the line (but not the columns!) of the input code.
+
+## 5.1.13
+
+ * **Polish**
+  * Remove symbol check from `defineProperty` helper.
+
+## 5.1.12
+
+ * **Bug Fix**
+  * Fix `resolveModuleSource` not being ran on `ExportAllDeclaration`s.
+  * Fix `.babelrc` being resolved multiple times when using the require hook.
+  * Fix parse error on spread properties in assignment position.
+  * Fix `externalHelpers` option being incorrectly listed as type `string`.
+ * **Internal**
+  * Upgrade `core-js` to `0.9.0`.
+ * **Spec Compliancy**
+  * Fix object decorators not using the `initializer` pattern.
+  * Remove property initializer descriptor reflection.
+
+## 5.1.11
+
+ * **Bug Fix**
+  * Memoise and bind member expression decorators.
+  * Move JSX children cleaning to opening element visitor. Fixes elements not being cleaned in certain scenarios.
+  * Consider `SwitchStatement`s to be `Scopable`.
+  * Fix `bluebirdCoroutines` calling `interopRequireWildcard` before it's defined.
+  * Add space to `do...while` code generation.
+  * Validate `super` use before `this` on `super` exit rather than entrance.
+ * **Polish**
+  * Add Babel name to logger.
+
+## 5.1.10
+
+ * **Bug Fix**
+  * Remove `makePredicate` from acorn in favor of an `indexOf`.
+  * Remove statements to expression explosion when inserting a block statement.
+ * **Internal**
+  * Remove runtime compatibility check.
+
+## 5.1.9
+
+ * **Bug Fix**
+  * Fix class property initializers with `undefined` values not being correctly writable.
+  * Fix self inferring generators incorrectly causing a stack error.
+  * Fix default export specifiers not triggering AMD `module` argument inclusion.
+  * Fix assignments not having their module references properly remapped.
+ * **Internal**
+  * Upgrade to latest `acorn`.
+ * **Polish**
+  * Make invalid LHS pattern error messages nicer.
+
+## 5.1.8
+
+ * **Bug Fix**
+  * Only make parenthesized object pattern LHS illegal.
+
+## 5.1.7
+
+ * **Internal**
+  * Add `parse` node API.
+
+## 5.1.6
+
+ * **Bug Fix**
+  * Fix `runtime` built-in catchall not properly checking for local variables.
+
+## 5.1.5
+
+ * **Internal**
+  * Bump `core-js` version.
+
+## 5.1.4
+
+ * **Polish**
+  * Add missing `Reflect` methods to runtime transformer.
+
+## 5.1.3
+
+ * **Internal**
+  * Switch entirely to vanilla regenerator.
+  * Clean up and make the parsing of decorators stateless.
+ * **Bug Fix**
+  * Don't do TCO on generators and async functions.
+  * Add missing `core-js` runtime definitions.
+
+## 5.1.2
+
+ * **Bug Fix**
+  * Add `getIterator` and `isIterable` to `babel-runtime` build script.
+
+## 5.1.1
+
+ * **Bug Fix**
+  * Add missing runtime symbol definitions.
+
+## 5.1.0
+
+ * **Bug Fix**
+  * Fix super reference when using decorators.
+  * Don't do array unpack optimisation when member expressions are present.
+  * Add missing descriptors for undecorated class properties.
+  * Don't consider `arguments` and `eval` valid function names when doing function name inferrence.
+  * Fix scope tracking of constants in loop heads.
+  * Parse `AwaitExpression` as a unary instead of an assignment.
+  * Fix regex evaluation when attempting static evaluation.
+  * Don't emit tokens when doing a lookahead.
+  * Add missing `test` declaration to `utility.deadCodeElimination` transformer.
+ * **Internal**
+  * Upgrade `regenerator` to the latest and use my branch with the hope of eventually switching to vanilla regenerator.
+  * Add support for the replacement of for loop `init`s with statements.
+  * Upgrade dependencies.
+ * **Polish**
+  * When adding the scope IIFE when using default parameters, don't shadow the function expression, just `apply` `this` and `arguments` if necessary.
+  * Use path basename as non-default import fallback.
+ * **New Feature**
+  * Add [trailing function comma proposal](https://github.com/jeffmo/es-trailing-function-commas). Thanks [@AluisioASG](https://github.com/AluisioASG)!
+  * Add support for object literal decorators.
+  * Make core-js modular when using the `runtime` transformer.
+
+## 5.0.12
+
+ * **Bug Fix**
+  * Fix incorrect remapping of module references inside of a function id redirection container.
+
+## 5.0.11
+
+ * **Bug Fix**
+  * Fix new `for...of` loops not properly inheriting their original loop.
+ * **Internal**
+  * Disable scope instance cache.
+ * **Polish**
+  * Allow comments in `.babelrc` JSON.
+
+## 5.0.9
+
+ * **Polish**
+  * Use `moduleId` for UMD global name if available.
+ * **Bug Fix**
+  * Fix UMD global `module` variable shadowing the `amd`/`common` `module` variable.
+  * Fix Flow param type annotation regression.
+  * Fix function name collision `toString` wrapper. Thanks [@alawatthe](https://github.com/alawatthe)!
+
+## 5.0.8
+
+ * **Bug Fix**
+  * Fix falsy static class properties not being writable.
+  * Fix block scoping collisions not properly detecting modules and function clashes.
+  * Skip `this` before `super` for derived constructors on functions.
+
+## 5.0.7
+
+ * **New Feature**
+  * Add `--ignore` and `--only` support to the CLI.
+ * **Bug Fix**
+  * Remove `HOMEPATH` environment variable from home resolution in `babel/register` cache.
+ * **Internal**
+  * Disable WIP path resolution introducing infinite recursion in some code examples.
+ * **Polish**
+  * Add live binding to CommonJS default imports.
+
+## 5.0.6
+
+ * **Bug Fix**
+  * Fix mangling of import references that collide with properties on `Object.prototype`.
+  * Fix duplicate declarations incorrectly being reported for `var`.
+
+## 5.0.5
+
+ * **Internal**
+  * Upgrade `core-js`.
+ * **Bug Fix**
+  * Fix arrays not being supported in `util.list`.
+
+## 5.0.4
+
+ * **Polish**
+  * Check for top level `breakConfig` in `resolveRc`.
+
+## 5.0.3
+
+ * **Bug Fix**
+  * Make relative location absolute before calling `resolveRc`.
+ * **Internal**
+  * Switch to global UID registry.
+  * Add `breakConfig` option to prevent Babel from erroring when hitting that option.
+
+## 5.0.1
+
+ * **Bug Fix**
+  * Fix duplicate declaration regression.
+  * Fix not being able to call non-writable methods.
+
+## 5.0.0
+
+ * **New Feature**
+  * Decorators based on [@wycat's](https://github.com/wycats) [stage 1 proposal](https://github.com/wycats/javascript-decorators).
+  * Class property initializers based on [@jeffmo's](https://github.com/jeffmo) [stage 0 proposal](https://gist.github.com/jeffmo/054df782c05639da2adb).
+  * Export extensions based on [@leebyron's](https://github.com/leebyron) [stage 1 proposal](https://github.com/leebyron/ecmascript-more-export-from).
+  * UMD module formatter now supports globals.
+  * Add `es3.runtime`, `optimisation.react.inlineElements` and `optimisation.react.constantElements` transformers.
+  * Add stage option that replaces the experimental one.
+  * Allow ES7 transformer to be enabled via `optional` instead of only via `stage`.
+  * Infer string quotes to use in the code generator.
+  * Consider `export { foo as default  };` to be the same as `export default foo;`.
+  * Add `nonStandard` option that can be set to `false` to remove parser support for JSX and Flow.
+  * Add `jsxPragma` option.
+  * Automatically generate CLI options based on internal API options.
+  * Add support for `.babelrc` on absolute paths.
+  * Plugin API!
+ * **Internal**
+  * Export `options` in browser API.
+  * Rewritten parser.
+  * Don't block hoist when runtime transformer is enabled in system module formatter.
+  * Rewritten the internal traversal and node replacement API to use "paths" that abstracts out node relationships.
+ * **Polish**
+  * JSX output is now more inline with the official JSX transformer.
+  * Hoist block scoping IIFE - this improves memory usage and performance.
+  * Better IIFE detection - references are now checked to see if they're referencing the binding we're searching for.
+  * Check for import reassignments in constants transformer.
+  * Make method definitions with expression bodies illegal.
+  * Save register cache on tick instead of `SIGINT`.
+  * Enable strict mode on babel-node eval flag.
+ * **Bug Fixes**
+  * Add support for live bindings. This change also increases the reliablity of export specifier renaming.
+  * Add support for super update and non equals assignment expressions.
+  * Rename shadow constructor binding in classes.
+  * Seed next iteration bindings with previous fresh bindings when reassinging loop block scoped variables.
+  * Fix new expression spread referencing the wrong constructor.
+  * Call `resolveModuleSource` on dynamic imports.
+  * Added `param` to list of duplicate declaration kinds.
+ * **Breaking Changes**
+  * The Babel playground has been removed.
+  * ES7 Abstract References have been removed.
+  * Experimental option has been removed in favor of a stage option.
+  * Rename `returnUsedHelpers` to `metadataUsedHelpers`.
+
+## 4.7.16
+
+ * **Bug Fix**
+  * Fix constructor spreading of typed arrays.
+  * Fix break/continue/return aliasing of non-loops in block scoping transformer.
+
+## 4.7.15
+
+ * **Bug Fix**
+  * Fix constructor spreading of collections.
+
+## 4.7.14
+
+ * **Bug Fix**
+  * Fix constructor spreading of `Promise`.
+ * **Internal**
+  * Deprecate remaining playground transformers and abstract references.
+
+## 4.7.13
+
+ * **Bug Fix**
+  * Handle comments on use strict directives.
+  * Fix assignment patterns with a left side pattern.
+ * **Polish**
+  * Special case `this` when doing expression memoisation.
+
+## 4.7.12
+
+ * **Bug Fix**
+  * Deprecate `playground.methodBinding`.
+
+## 4.7.11
+
+ * **Bug Fix**
+  * Fix unicode regexes stripping their unicode flag before being passed on two `regexpu`.
+
+## 4.7.10
+
+ * **Internal**
+  * Deprecate `playground.methodBinding` and `playground.objectGetterMemoization`.
+ * **Bug Fix**
+  * Fix `inputSourceMap` option. Thanks [@Rich-Harris](https://github.com/Rich-Harris)!
+
+## 4.7.9
+
+ * **Polish**
+  * Allow `inputSourceMap` to be set to `false` to skip the source map inference.
+  * Infer computed literal property names.
+ * **Bug Fix**
+  * Fix nested labeled for-ofs.
+  * Fix block scoping `break` colliding with the parent switch case.
+ * **Internal**
+  * Upgrade `acorn-babel`.
+
+## 4.7.8
+
+ * **Bug Fix**
+  * Fix computed classes not properly setting symbols.
+
+## 4.7.7
+
+ * **Bug Fix**
+  * Fix `types` API exposure.
+
+## 4.7.6
+
+ * **Bug Fix**
+  * Fix non-Identifier/Literal computed class methods.
+ * **Polish**
+  * Add a fallback if `stack` on an error is unconfigurable.
+  * Hoist `esModule` module declarations to the top of the file to handle circular dependencies better.
+
+## 4.7.5
+
+ * **Bug Fix**
+  * Don't remap` break`s to call the iterator return.
+ * **Polish**
+  * Use a different helper for computed classes for much nicer output. Also fixes a bug in symbols being non-enumerable so they wouldn't be set on the class.
+
+## 4.7.4
+
+ * **Bug Fix**
+  * Rewrite named function expressions in optional async function transformers.
+  * Hoist directives.
+  * Remove `Number` from the list of valid `runtime` constructors.
+ * **Internal**
+  * `spec.typeofSymbol` transformer has been renamed to `es6.symbols`.
+
+## 4.7.2
+
+ * **New Feature**
+  * `"both"` option for `sourceMap`.
+  * Add output types to external helpers. Thanks [@neVERberleRfellerER](https://github.com/neVERberleRfellerER)!
+ * **Bug Fix**
+  * Fix node duplication sometimes resulting in a recursion error.
+  * Ignore `break`s within cases inside `for...of`.
+ * **Polish**
+  * Split up variable declarations and export declarations to allow easier transformation.
+
+## 4.7.0
+
+ * **Bug Fix**
+  * Add `alternate` to list of `STATEMENT_OR_BLOCK` keys.
+  * Add support for module specifiers to `t.isReferenced`.
+ * **New Feature**
+  * Add `inputSourceMap` option.
+ * **Polish**
+  * Throw an error on different `babel` and `babel-runtime` versions.
+  * Replicate module environment for `babel-node` eval.
+  * Clean up classes output.
+ * **Spec Compliancy**
+  * Make it illegal to use a rest parameter on a setter.
+
+## 4.6.6
+
+ * **Bug Fix**
+  * Fix incorrect method call in `utility.deadCodeElimination` transformer.
+  * Fix `es6.blockScopingTDZ` transformer duplicating binding nodes.
+
+## 4.6.5
+
+ * **Internal**
+  * `useStrict` transformer has been renamed to `strict`.
+
+## 4.6.4
+
+ * **Bug Fix**
+  * Fix `ForOfStatement` not proplery inheriting labels.
+  * When in closure mode in block scoping transformer, properly check for variable shadowing.
+ * **New Feature**
+  * New `utility.inlineEnvironmentVariables` and `utility.inlineExpression` transformers.
+
+## 4.6.3
+
+ * **Bug Fix**
+  * Fix `arguments` being incorrectly aliased in arrow function rest parameter optimisation.
+  * Make deoptimisation trigger safer.
+ * **New Feature**
+  * Flow types are now retained when blacklisting the `flow` transformer.
+
+## 4.6.1
+
+ * **Bug Fix**
+  * Fix generators in template directory being transformed.
+  * Fix exposure of `util` for plugins.
+
+## 4.6.0
+
+ * **New Feature**
+  * Desugar sticky regexes to a new constructor expression so it can be handled by a polyfill.
+ * **Spec Compliancy**
+  * `for...of` now outputs in a lengthy `try...catch` this is to ensure spec compliancy in regards to iterator returns and abrupt completions. See [google/traceur-compiler#1773](https://github.com/google/traceur-compiler/issues/1773) and [babel/babel/#838](https://github.com/babel/babel/issues/838) for more information.
+ * **Polish**
+  * Rest parameters that are only refered to via number properties on member expressions are desugared into a direct `arguments` reference. Thanks [@neVERberleRfellerER](https://github.com/neVERberleRfellerER)!
+  * `$ babel` no longer exits on syntax errors.
+ * **Internal**
+  * Upgrade `browserify`.
+  * Upgrade `source-map`.
+  * Publicly expose more internals.
+
+## 4.5.5
+
+ * **Polish**
+  * Delete old extensions when overriding them in `babel/register`.
+
+## 4.5.3
+
+ * **Bug Fix**
+  * Fix whitelisting logic for helper build script.
+
+## 4.5.2
+
+ * **New Feature**
+  * `returnUsedHelpers` option and add whitelist to `buildHelpers`.
+ * **Bug Fix**
+  * Fix function arity on self referencing inferred named functions.
+ * **Internal**
+  * Bump `acorn-babel`.
+  * Start converting source to ES6...
+
+## 4.5.1
+
+**Babel now compiles itself!**
+
+![holy shit](http://gifsec.com/wp-content/uploads/GIF/2014/03/OMG-GIF_2.gif)
+
+## 4.5.0
+
+ * **New Feature**
+  * Add `.babelrc` support.
+ * **Bug Fix**
+  * Move use strict directives to the module formatter bodies.
+ * **Internal**
+  * Make default `bin/babel` behaviour to ignore non-compilable files and add a `--copy-files` flag to revert to the old behaviour.
+
+## 4.4.6
+
+ * **Bug Fix**
+  * Fix extending a class expression with no methods/only constructor. Thanks [@neVERberleRfellerER](https://github.com/neVERberleRfellerER)!
+  * Allow `MemberExpression` as a valid `left` of `ForOfStatement`.
+ * **Polish**
+  * Throw an error when people try and transpile code with the `@jsx React.DOM` pragma as it conflicts with the custom jsx constructo method detection.
+  * Crawl all comments for `@jsx` pragma.
+ * **Internal**
+  * Upgrade `chalk`.
+  * Upgrade `core-js`.
+
+## 4.4.5
+
+ * **Internal**
+  * Remove function self reference optimisation.
+
+## 4.4.4
+
+ * **Bug Fix**
+  * Handle inferred function ids to be reassigned and deopt to a slower but working equivalent.
+  * Don't unpack array patterns that have more elements than their right hand array expression.
+ * **Polish**
+  * Improve syntax highlighting in the code frame. Thanks [@lydell](https://github.com/lydell)!
+ * **Internal**
+  * Upgrade `acorn-babel`.
+
+## 4.4.3
+
+ * **Bug Fix**
+  * Fix `for...of` iterator break returns being duplicated.
+  * Only call `return` on the iterator if it exists.
+ * **Internal**
+  * Rename `selfContained` transformer to `runtime`.
+
+## 4.4.2
+
+ * **New Feature**
+  * Add `moduleId` option for specifying a custom module id.
+
+## 4.4.0
+
+ * **New Feature**
+  * `/*** @jsx NAMESPACE **/` comments are now honored by the `react` transformer.
+  * `getModuleName` option.
+  * Infer function expression names. Thanks [@RReverser](https://github.com/RReverser)!
+ * **Bug Fix**
+  * Add proper control flow for tail recursion optimisation.
+ * **Internal**
+  * Remove useless `format` options and move the `format.compact` option to `format`.
+ * **Polish**
+  * Newline handling of the code generator has been heavily improved.
+  * Code generator now deopts whitespace if the input size is >100KB.
+
+## 4.3.0
 
  * **Breaking Change**
-  * [Make class methods unenumerable](/Users/sebastian/Projects/6to5/6to5/test/fixtures/esnext/es6-classes/getter-setter.js).
+  * Remove `commonStandard` module formatter and make it the default behaviour of all the strict module formatters.
 
-## 3.0.16
-
- * **Bug Fix**
-  * Don't ignore dynamic import specifiers.
- * **Internal**
-  * Upgrade `regenerator-6to5`.
- * **Polish**
-  * Use `Object.assign` in place of extends helper if it exists.
-  * Require individual `lodash` methods. Thanks [@stefanpenner](https://github.com/stefanpenner)!
-
-## 3.0.15
-
- * **Bug Fix**
-  * Use `debug/node` instead of `debug` to avoid browserify using the browser version that references `window`.
-
-## 3.0.14
-
- * **New Feature**
-  * Add `--optional` argument to `6to5-node`.
- * **Bug Fix**
-  * Fix bug in `asyncToGenerator` helper where it was incorrectly calling generator iterator functions.
-
-## 3.0.13
-
- * **Bug Fix**
-  * Fix modules loose mode using `modules` instead of `es6.modules`.
-
-## 3.0.12
-
- * **Internal**
-  * Add internal debug messages.
- * **Bug Fix**
-  * Add `noScope` option to `traverse.clearProperties`.
-
-## 3.0.11
-
- * **Bug Fix**
-  * Fix `ast-types` `RestElement` definition.
-  * Make `es6.forOf` loose mode more versatile and support destructuring.
-
-## 3.0.10
-
- * **Bug Fix**
-  * In `types.getIds` make sure the `declaration` inside of `ExportDeclaration` is actually a `Declaration`.
-
-## 3.0.9
-
- * **Bug Fix**
-  * Make `t.isReferenced` more powerful, actually take into consideration all contexts were identifier nodes aren't actually references.
-  * Don't camelcase underscores when converting a string to a valid identifier.
-
-## 3.0.8
-
- * **Bug Fix**
-  * Split up default function declaration exports due to regenerator destroying the parent export declaration.
-
-## 3.0.7
-
- * **Internal**
-  * Upgrade `core-js` to `0.4.9`.
- * **Bug Fix**
-  * Add id to function express scope tracking.
-
-## 3.0.6
-
- * **Bug Fix**
-  * Fix block scope variable tracking stopping whenever it hits a new scope.
-  * Fix block scope variable tracking breaking on all block statement scopes that have a for loop parent.
-
-## 3.0.5
-
- * **Internal**
-  * More reliable default parameter scope.
-
-## 3.0.4
-
- * **Bug Fix**
-  * Remove traversal stops from block scope tracking.
-
-## 3.0.3
-
- * **Internal**
-  * Ignore options starting with `_`.
-
-## 3.0.2
-
- * **Internal**
-  * Add common plugin options to valid options list.
-
-## 3.0.1
-
- * **Internal**
-  * Downgrade `kexec` as `1.1.0` throws compilation errors.
-
-## 3.0.0
+## 4.2.1
 
  * **Polish**
-  * Generated code autoindentation.
-  * Moved global uid registry to a scope registry resulting in nicer uids.
-  * `this` is now illegal in the top level scope when using the default `useStrict` transformer.
-  * New `asyncToGenerator` helper that's much more compact.
-  * Throw errors on unknown options.
-  * More reliable default parameter scope.
-  * Helpers are now compact and have no newlines.
- * **Internal**
-  * Rewritten a lot of the internals to much simpler.
-  * Removed TDZ from default parameters as it was very wonky and unreliable.
-  * Upgrade `core-js` to `0.4.6`.
-  * Upgrade `acorn-6to5`.
-   * JSX support is now on-par with react-tools/esprima.
-   * Shorthand destructuring.
- * **Bug Fix**
-  * Generators now work flawlessly with any parameter transformers.
-  * Optional async function transformers should not name their functions.
-  * Remove `unlink` event watching in `bin/6to5`.
-  * Fix regenerator variable declarations being incorrectly hoisted breaking scope.
-  * Transformers that attempted to simplify expressions that had no consequence now take into account whether it's one of the last statements/expressions in the script.
- * **New Feature**
-  * New `selfContained` transformer.
-  * New `undeclaredVariableCheck` optional transformer.
-  * Added `--blacklist` and `--whitelist` options to `6to5-node`.
- * **Breaking Change**
-  * Caching is now always enabled for the require hook. It also now no longer caches require resolutions.
-  * Bare `super();` only works inside of constructors.
-  * Removed the optional runtime in favor of the `selfContained` transformer.
-  * This shorthand has been removed from the playground.
-  * `6to5/polyfill` can now only be required **once**.
-  * **CLI**
-    * `--indent` option has been removed.
-    * `--include-regenerator` option has been removed.
-    * `--amd-modules-id` option has been removed, use `--module-ids` instead.
-  * **Options**
-    * `amdModuleIds` option has been removed, use `moduleIds` instead.
-    * `includeRegenerator` has been removed.
-    * `ignoreRegex` fallback has now been dropped from the require hook. `register(/foo/);`, `register({ ignoreRegex: /foo/ })` -> `register({ ignore: /foo/ })`.
-  * **Modules**
-    * Module interop now only collapses to `module.exports` when there's a **single** export that's default.
-    * Imports and exports are now illegal anywhere except the root level by default. Set `modules` to [loose mode](http://6to5.org/docs/usage/loose) to allow them everywhere.
-  * **Transformers**
-    * Optional fast transformer backwards compatibility support has been removed. Use [loose mode](https://6to5.org/docs/usage/loose).
-    * Removed the `coreAliasing` transformer in favor of `selfContained`.
-    * Renamed transformers:
-     * `specNoForInOfAssignment` -> `validation.noForInOfAssignment`
-     * `specSetters` -> `validation.setters`
-     * `specBlockScopedFunctions` -> `spec.blockScopedFunctions`
-     * `malletOperator` -> `playground.malletOperator`
-     * `methodBinding` -> `playground.methodBinding`
-     * `memoizationOperator` -> `playground.memoizationOperator`
-     * `objectGetterMemoization` -> `playground.objectGetterMemoization`
-     * `modules` -> `es6.modules`
-     * `propertyNameShorthand` -> `es6.properties.shorthand`
-     * `arrayComprehension` -> `es7.comprehensions`
-     * `generatorComprehension` -> `es7.comprehensions`
-     * `arrowFunctions` -> `es6.arrowFunctions`
-     * `classes` -> `es6.classes`
-     * `objectSpread` -> `es7.objectSpread`
-     * `exponentiationOperator` -> `es7.exponentiationOperator`
-     * `spread` -> `es6.spread`
-     * `templateLiterals` -> `es6.templateLiterals`
-     * `propertyMethodAssignment` -> `es6.properties.shorthand`
-     * `computedPropertyNames` -> `es6.properties.computed`
-     * `defaultParameters` -> `es6.parameters.default`
-     * `restParameters` -> `es6.parameters.rest`
-     * `destructuring` -> `es6.destructuring`
-     * `forOf` -> `es6.forOf`
-     * `unicodeRegex` -> `es6.unicodeRegex`
-     * `abstractReferences` -> `es7.abstractReferences`
-     * `constants` -> `es6.constants`
-     * `letScoping` -> `es6.blockScoping`
-     * `blockScopingTDZ` -> `es6.blockScopingTDZ`
-     * `generators` -> `regenerator`
-     * `protoToAssign` -> `spec.protoToAssign`
-     * `typeofSymbol` -> `spec.typeofSymbol`
-     * `coreAliasing` -> `selfContained`
-     * `undefinedToVoid` -> `spec.undefinedToVoid`
-     * `undeclaredVariableCheck` -> `validation.undeclaredVariableCheck`
-     * `specPropertyLiterals` -> `minification.propertyLiterals`
-     * `specMemberExpressionLiterals` -> `minification.memberExpressionLiterals`
+  * Add auxiliary comment to let scoping closure flow control.
 
-## 2.13.7
-
- * **Bug Fix**
-  * Don't realias variables that are already declared in optional `coreAliasing` transformer.
-
-## 2.13.6
-
- * **Bug Fix**
-  * Add `NewExpression` as a valid parent for parentheses insertion for `ConditionalExpression`.
-
-## 2.13.5
-
- * **Bug Fix**
-  * Allow rest parameters to be destructuring patterns.
- * **Internal**
-  * Upgrade `kexec` to `1.1.0`.
-
-## 2.13.4
-
- * **Bug Fix**
-  * Fix ordering of destructuring and default params.
-  * Fix loop body scope.
-  * Fix `for...of` transformation not retaining it's scope.
-  * Add destructuring assignment support to scope tracking.
- * **Polish**
-  * More reliable newlines for pretty printing variable declarations.
-
-## 2.13.3
-
- * **Internal**
-  * Add `coverage` and `vendor` to npmignore.
-
-## 2.13.2
-
- * **Bug Fix**
-  * Fix `super` inside of nested functions.
- * **Internal**
-  * Move let scoping TDZ into a separate transformer until it's more solid.
-  * Use `process.stdin.write` instead of `console.log` in `bin` to avoid sprintfification.
-
-## 2.13.1
-
- * **New Feature**
-  * Temporal dead zone for block binding.
-
-## 2.13.0
-
- * **New Feature**
-  * Block scoped functions.
-  * Add `--loose all` option.
-  * Add playground mallet operator thanks to [@jridgewell](https://github.com/jridgewell).
- * **Bug Fix**
-  * Rewrote large parts of the let scoping transformer. Now passes all known tests.
- * **Internal**
-  * Even more optimisations thanks to the awesome [@gaearon](https://github.com/gaearon).
-  * Upgrade `acorn-6to5`.
-    * Fixes exponentation operator thanks to [@charliesome](https://github.com/charliesome).
-    * Fix flow optional parameters with types.
-  * Upgrade `chokidar` to `0.12.6`.
-  * Upgrade `commander` to `2.6.0`.
-  * Upgrade `core-js` to `0.4.5`.
-  * Upgrade `estraverse` to `1.9.1`.
-  * Upgrade `jshint` to `2.5.11`.
-  * Upgrade `regenerator` to `0.8.9`.
-  * Upgrade `regexpu` to `1.0.0`.
-  * Upgrade `source-map` to `0.1.43`.
-  * Upgrade `source-map-support` to `0.2.9`.
-  * Upgrade `browserify` to `8.1.1`.
-  * Upgrade `chai` to `1.10.0`.
-  * Upgrade `istanbul` to `0.3.5`.
-  * Upgrade `mocha` to `2.1.0`.
-  * Upgrade `uglify-js` to `2.4.16`.
-
-## 2.12.6
-
- * **Bug Fix**
-  * Add missing flow type traversal keys.
-
-## 2.12.5
-
- * **Internal**
-  * Fix incorrect `for...in` loop still causing `ember-script` issues.
-
-## 2.12.4
+## 4.2.0
 
  * **Polish**
-  * Rest parameters now allocate the array before populating.
+  * Use an assignment instead of a define for `__esModule` in loose mode.
  * **Internal**
-  * `for...in` loops have been changed to optimised `for` loops - better performance and no enumeration of protoype keys.
-  * Parts of the code generator have now been optimised thanks to [gaearon](https://github.com/gaearon).
+  * Add error for `eval();` usage and enable strict mode for parsing.
 
-## 2.12.3
+## 4.1.0
 
- * **Spec Compliancy**
-  * Optional `typeof` transformer checks for `undefined` before passing it to the helper.
-  * Class methods are now named.
-
-## 2.12.2
-
- * **Internal**
-  * Exclude nodes in function parameters and catch clauses from `isReferenced` check.
-
-## 2.12.1
-
- * **Internal**
-  * Add `.jsx` to list of allowed extensions.
-
-## 2.12.0
-
- * **Bug Fix**
-  * Support non-string JSX literals.
  * **New Feature**
-  * Loose mode for some transformers that enables non-spec behaviour.
+  * Add `BABEL_CACHE_PATH` and `BABEL_DISABLE_CACHE` environment variables.
  * **Internal**
-  * Uglify `--mangle sort` has been added to the build script, cutting minified scripts in half.
+  * Replace many internal util functions with modules. Thanks [@sindresorhus](https://github.com/sindresorhus)!
 
-## 2.11.4
-
- * **Internal**
-  * Make all dependency versions fixed.
-
-## 2.11.3
+## 4.0.2
 
  * **Bug Fix**
-  * Allow a string to be passed as the `optional` option.
-
-## 2.11.2
-
- * **Bug Fix**
-  * Support esprima-style catch clause handlers.
+  * Fix generators not properly propagating their internal declarations.
  * **Polish**
-  * Don't print a stacktrace for syntax errors in the CLI.
+  * Update setter param length error message.
+  * Use ranges on dependencies.
 
-## 2.11.1
+## 4.0.0
 
- * **Bug Fix**
-  * Remove stray `console.log` outputting debug code.
-  * Remove `Dict` from `coreAliasing`.
-
-## 2.11.0
-
- * **Bug Fix**
-  * Fix unnecessary IIFE in default parameters on method calls.
-  * Add support for supers inside of closures.
- * **New Feature**
-  * Add `--keep-module-id-extensions`/`keepModuleIdExtensions` option to keep extensions in module ids.
- * **Polish**
-  * Special case single argument spread properties in `super` inside classes.
-  * Don't use a variable declaration for class declaration IFFE.
-  * Rename `inherits` helper parameters.
-  * `coreAliasing` transformer now aliases `Promise`, `Set`, `Map` and more. Thanks [@AluisioASG](https://github.com/AluisioASG).
-
-## 2.10.1
-
- * **Internal**
-  * Upgrade `core-js` to `0.4.4`.
- * **New Feature**
-  * Added `--include-regenerator` option to CLI and `includeRegenerator` option to API that includes the regenerator runtime if necessary.
-
-## 2.10.0
-
- * **New Feature**
-  * Add `classesFastSuper` optional transformer that doesn't support parent getters and prototype changing.
-  * Add `forOfFast` transformer that speeds up `for...of` on arrays but produces more code.
-  * Add `--react-compat` to `bin/6to5`.
- * **Spec Compliancy**
-  * Disallow setters without a single parameter.
-  * Add `configurable` and `writable` to defined properties.
-  * Use define instead of assignment for class methods.
- * **Polish**
-  * Fix bin name in `6to5-node --help`.
-  * Fix shorthand `--whitelist` name in `bin/6to5`.
- * **Internal**
-  * Hot code optimisation of traversal etc thanks to [gaearon](https://github.com/gaearon).
-
-## 2.9.4
-
- * **Bug Fix**
-  * Support `UpdateExpression`s as `MemberExpression` objects.
-
-## 2.9.3
-
- * **Bug Fix**
-  * Remove `exportsWildcard` helper in favor of `defaults`.
-
-## 2.9.2
-
- * **Bug Fix**
-  * Pass `exports` to `exportWildcard` helper to allow for use inside the optional runtime.
-
-## 2.9.1
-
- * **Bug Fix**
-  * Fix runtime generator breaking the helper inclusion loop.
-
-## 2.9.0
-
- * **Internal**
-  * Upgrade `acorn-6to5`.
-    * Now supports destructuring shorthand properties.
-
-## 2.8.1
-
- * **Bug Fix**
-  * Fix computed accessors on object literals.
-
-## 2.8.0
-
- * **New Feature**
-  * Add `commonStrict`, `amdStrict` and `umdStrict` module formatters that remove `module.exports` interop assignment.
-  * Add `--indent` option to the 6to5 CLI.
-
-## 2.7.4
-
- * **Polish**
-  * Inherit assignments from their declaration in destructuring.
-  * Properly align multi-declarator variable declarations.
-
-## 2.7.3
-
- * **Polish**
-  * Indent and add newlines to `React.createElement` calls in `react` transformer.
-  * Remove `Object.assign` calls and replace it with an `extends` helper.
-
-## 2.7.1
-
- * **New Feature**
-  * Expose `version` on browser and node API.
- * **Internal**
-  * Upgrade `core-js` to 0.4.1
-
-## 2.7.0
-
- * **Spec Compliancy**
-  * Disallow reassignments of imports.
- * **New Feature**
-  * `reactCompat` option to enable pre-v0.12 react components.
-
-## 2.6.3
-
- * **Bug Fix**
-  * Fix 2.6.0 regression caused by faulty export default from a source handling.
-
-## 2.6.2
-
- * **Bug Fix**
-  * Fix rest parameter keys when on functions with params.
-
-## 2.6.1
-
- * **Bug Fix**
-  * Fix rest parameter arguments key.
-
-## 2.6.0
-
- * **Bug Fix**
-  * Better handling of number literal property keys.
-  * Handle `NewExpression` paren insertion edegcases better.
- * **Internal**
-  * Fix incorrect AST node `identifier("this")`.
-  * Better `toIdentifier` method that handles reserved words.
-  * Upgrade `acorn-6to5`.
-    * Fix exponentiation operator precedence.
-    * Fix line terminators after async contextual keywords.
-    * Add semicolons as class elements inside of a class body.
-  * Upgrade to `core-js` 4.0.0.
-  * Upgrade to `regenerator` 0.8.3.
-    * Fix non-loop labeled statements.
- * **New Feature**
-  * Basic destructuring defaults
-  * Add `.es` to list of supported extensions.
-  * Add optional `typeofSymbol` transformer.
-  * Use a `for` loop for rest parameters instead of `Array.prototype.slice`.
- * **Polish**
-  * Move `"use strict";` to inside module bodies instead of at the top of the file.
-  * Better handling of dynamic imports.
- * **Spec Compliancy**
-  * Class inheritance now has a `function` or `null` type check.
-  * Add `interopRequireWildcard` around wildcard imports and exports to handle non-object exports.
-
-## 2.5.0
-
- * Remove `noDuplicateProperties` transformer.
- * Better generated UIDs based on nodes.
- * Default parameters now use `arguments[i]`, conditionals and variable declarations instead of using long-form if statements.
-
-## 2.4.10
-
- * Upgrade `acorn-6to5`.
-
-## 2.4.9
-
- * Upgrade `acorn-6to5`.
- * Add optional `protoToAssign` transformer.
- * Fix missing properties from computed property keys.
- * Make ES7 comprehensions `let` variables.
-
-## 2.4.8
-
- * Make `require("6to5/register")` work with browserify - [#370](https://github.com/6to5/6to5/pull/370). Thanks [@hughsk](https://github.com/hughsk)!
-
-## 2.4.7
-
- * Upgrade `acorn-6to5`.
-
-## 2.4.6
-
- * Move `coreAliasing` and `undefinedToVoid` transformers down to catch `moduleFormatter` transforms.
-
-## 2.4.5
-
- * Avoid printing comments if they've already been output.
-
-## 2.4.4
-
- * Add `module` type to browser build `<script>` handler.
- * Fix some `MemberExpression` modifying incorrectly setting `property` to a `MemberExpression`.
-
-## 2.4.3
-
- * Upgrade `acorn-6to5`.
- * Add support for `FunctionDeclaration`s in `bluebirdCoroutines` and `asyncToGenerators` transformers.
-
-## 2.4.2
-
- * Upgrade `acorn-6to5`.
- * Better uids generated for various transformers based on parent node.
- * Alias flat references in `coreAliasing` transformer.
-
-## 2.4.1
-
- * Better whitespace handling of parenthesized expressions due to trailing comments.
- * Fix `yield` inside of comprehensions.
-
-## 2.4.0
-
- * Use a closure always for classes with a super.
- * Always use native loops for array comprehensions.
- * Allow `yield` inside of comprehensions.
- * Add optional `bluebirdCoroutine` transformer.
- * Add optional `asyncToGenerator` transformer.
- * Move `useStrict` transformer to before `_moduleFormatter` causing `"use strict";` to always be placed the very top.
-
-## 2.3.2
-
- * Add parens on expressions with trailing comments.
-
-## 2.3.1
-
- * Add `undefinedToVoid` optional transformer.
- * Use `Object.defineProperty` for computed properties.
-
-## 2.3.0
-
- * Upgrade `acorn-6to5`.
- * Support circular references and hoist variable declarations in `system` module formatter.
- * Add optional transformers, including a new `coreAliasing` transformer that aliases native ES6 static properties to their `core-js` equivalent.
-
-## 2.2.0
-
- * Make `system` module formatter modules anonymous by default.
- * Fix duplicate comments being output, breaking code.
-
-## 2.1.0
-
- * Add `cache` option to register hook.
- * Update `core-js`.
- * Fix starting newline not being added on case statements.
- * Fix destructuring `VariableDeclaration`s not inside `BlockStatement`s and `Program`.
-
-## 2.0.4
-
- * Avoid being greedy when destructuring array iterables.
-
-## 2.0.3
-
- * Hoist function declarations in system module formatter for circular references.
- * Hoist default function declarations in umd and amd module formatters for circular references.
-
-## 2.0.2
-
- * Inherit comments in `for-of` transformer.
- * Remove `interopRequire` from `system` module formatter.
-
-## 2.0.1
-
- * Remap `UpdateExpression` module export binding.
- * Fix automatic closure on `PrivateDeclaration` in classes.
-
-## 2.0.0
-
- * Make string literal generation only escapes unicode that it has to.
- * Internal code generation format options have been exposed.
- * Change playground method binding operator from `:` to `#` removing ambiguous syntax with terns.
- * Fix rest parameters in async and generator functions.
- * Export/import declarations replace by the modules transformer now inherit comments.
- * Added playground flag to `6to5-node`.
- * `6to5-node` now behaves the same as `node`.
- * `6to5-node` now uses `kexec` to become the forked process to correctly propagate signals on unix.
- * Constants are now block scoped.
- * Exposed ast transformer.
- * Merged `commonInterop` and `common` module formatters.
- * Fix generator comprehensions not inheriting `arguments`, `this` etc.
- * Object and class mutator shorthand are now enumerable.
- * Remove regenerator `Generator has already finished` error which isn't spec-compliant.
- * Expose internal `spec` transformers that nicen up code output.
- * Add export variable declaration default initializers.
- * Propagate export declaration reassignments.
- * Add initializer default to block scoped variable declarations within a loop.
- * Flow type support.
- * Make async/await contextual keywords.
- * Allow `yield`ing of non-objects.
- * Class declarations now lack an IIFE.
- * Support falsy and `null` super classes.
- * Add support for experimental abstract references `private` declarations.
- * Leave out IIFE for class declarations.
- * Switched to [core-js](https://github.com/zloirock/core-js) from [es6-symbol](https://github.com/medikoo/es6-symbol) and [es6-shim](https://github.com/paulmillr/es6-shim/) for built-in polyfill.
- * `amd` and `umd` module formatters now behave the same as `common` with `interopRequire`.
- * Micro-optimizations to boost performance by 200%.
- * Rename module formatter methods `import` to `importDeclaration` and `export` to `exportDeclaration`.
- * Support multiple declarators in export variable declarations.
- * Freeze tagged template literal object.
- * Remove inlined `regenerator` fork.
- * Remove `ParenthesizedExpression`.
- * Rename `object-spread` helper to `object-without-properties`.
- * Rename `class-props` helper to `prototype-properties`.
- * Rename `extends` helper to `inherits`.
- * Completely rewritten `system` module formatter.
-
-## 1.15.0
-
- * Don't alias `GeneratorFunction` and check the name which causes minifiers to remove the name and throw an error later on when we check if it's set.
-
-## 1.14.18
-
- * Fix files only containg comments not being output.
- * Fix duplicate comments on property key shorthands.
-
-## 1.14.17
-
- * Add default initializer to let variables within loop bodies.
- * Fix excessive `break` replacement inside of switches in let scoping.
-
-## 1.14.16
-
- * Add object getter memos and this shorthand to playground.
- * Fix while loops in let scoping.
- * Upgrade `acorn-6to5`.
-
-## 1.14.14
-
- * Fix template literals escaping.
-
-## 1.14.13
-
- * Fix let scoping of `while` loops.
- * Make class methods enumerable.
-
-## 1.14.12
-
- * Fix duplicate dynamic expressions in call spread.
-
-## 1.14.10
-
- * Fix let scoping unneccesary override.
-
-## 1.14.6
-
- * Avoid ensuring a block on non-array node replacements.
-
-## 1.14.5
-
- * Upgrade `acorn-6to5`.
- * Fix JSON recursion error for unknown code generator node types.
- * Ensure that a statement is a block on block/statement types when replacing them with multiple nodes.
-
-## 1.14.4
-
- * Merge pretzel maps and method binding.
-
-## 1.14.3
-
- * Add playground pretzel maps.
-
-## 1.14.2
-
- * Fix `commonInterop` default export handling.
- * Fix keyworded property key identifiers being turned into computed property key literals.
-
-## 1.14.1
-
- * Inherit comments from `ClassDeclaration`.
-
-## 1.14.0
-
- * Add [playground](https://6to5.github.io/playground.html).
-
-## 1.13.13
-
- * Fix `--debug` in `bin/6to5-node`. Thanks [@timoxley](https://github.com/timoxley).
-
-## 1.13.12
-
- * Ignore `XJSEmptyExpression`s in `react` transformer output.
-
-## 1.13.11
-
- * Fix `util.regexify` on falsy values.
- * Fix `_aliasFunction` with rest parameters.
- * Export as `module.exports` instead of `exports.default` if there are no other `ExportDeclaration`s in `commonInterop` module formatter.
- * Add `system` module formatter. Thanks [@douglasduteil](https://github.com/douglasduteil).
-
-## 1.13.10
-
- * Add support for `AssignmentExpression` destructuring outside of `ExpressionStatement`.
-
-## 1.13.9
-
- * Fix `VirtualPropertyExpression` visitor keys.
-
-## 1.13.8
-
- * Only use a single reference in abstract references.
-
-## 1.13.7
-
- * Upgrade `acorn-6to5`.
- * Add experimental exponentiation operator support.
-
-## 1.13.6
-
- * Fix experimental object spread/rest helper.
-
-## 1.13.5
-
- * Upgrade `acorn-6to5`.
- * Add experimental support for object spread/rest.
- * Change `arguments` to array to an additional helper method.
-
-## 1.13.4
-
- * Fix single spread element returning itself.
-
-## 1.13.3
-
- * Upgrade `acorn-6to5`.
- * Add experimental support for abstract references.
-
-## 1.13.2
-
- * Optimise `Array.from` usage by adding a helper method.
- * Upgrade `acorn-6to5`.
-
-## 1.13.1
-
- * Fix constructor spread optimisation. Thanks [@zloirock](https://github.com/zloirock).
-
-## 1.13.0
-
- * Put experimental ES7 features behind a flag `--experimental` and `experimental` option.
- * Constructor spread performance increase. Thanks [@RReverser](https://github.com/RReverser).
- * Use `self` instead of `window` in the optional 6to5 runtime. Thanks [@RReverser](https://github.com/RReverser).
-
-## 1.12.26
-
- * Support computed property destructuring.
-
-## 1.12.25
-
- * Update `acorn-6to5`, `ast-types`, `es6-shim`, `chokidar`, `estraverse` and `private`.
-
-## 1.12.24
-
- * Collect references that haven't been declared in scope.
-
-## 1.12.23
-
- * Fix generator function export hoisting.
-
-## 1.12.22
-
- * Update `fs-readdir-recursive` and `chokidar`.
- * Support array destructuring on iterables.
- * Make amd module id optional. Thanks [@webpro](https://github.com/webpro).
-
-## 1.12.21
-
- * Fix unneccesary let scoping replacement.
- * Add `commonInterop` module formatter. Thanks [@Naddiseo](https://github.com/Naddiseo).
- * Fix `return` outside of function body bug. Thanks [@brentburg](https://github.com/brentburg).
- * Add more flexible option types.
-
-## 1.12.20
-
- * Append `sourceMappingURL` when using `bin/6to5` and output sourcemaps.
-
-## 1.12.19
-
- * Add `comments` option and `--remove-comments` flag. Thanks [@webpro](htps://github.com/webpro).
- * Embed `regenerator`.
-
-## 1.12.18
-
- * Use `global` reference instead of `window`.
-
-## 1.12.17
-
- * Add `moduleName`, `sourceRoot` and `filenameRelative` options. Thanks [@darvelo](https://github.com/darvelo).
- * Traversal optimisations.
-
-## 1.12.16
-
- * Fix comments not being retained from `MethodDefinition` in classes.
- * Add temporal dead zone in default parameters.
-
-## 1.12.15
-
- * Update `acorn-6to5`.
-
-## 1.12.14
-
- * Fix duplicate let scoping in functions.
- * Make JSX whitespace more React-compliant.
- * Add `_memberExpressionKeywords` transformer that turns keyword identifiers to computed literals.
- * Upgrade `regenerator-6to5`.
-
-## 1.12.13
-
- * Support duplicate constants within different block scopes.
- * Fix for-head duplication testing and replacement.
- * Support `raw` property on tagged template literals.
-
-## 1.12.12
-
- * Make scope tracker more reliable to handle all edgecases.
-
-## 1.12.11
-
- * Block scope classes.
- * Fix generation of integer `Literal`s in `MemberExpression`.
-
-## 1.12.10
-
- * Fix let scoping var hoisting.
-
-## 1.12.9
-
- * Escape unicode characters when generating string `Literal`s.
- * Fix semicolons being output for statements in `ExportDeclaration`.
- * Fix `WithStatement` missing parenthesis.
-
-## 1.12.8
-
- * Temporarily forbid `AssignmentExpression` destructuring outside of `ExpressionStatement`.
-
-## 1.12.7
-
- * Update to latest `acorn-6to5`.
-
-## 1.12.6
-
- * Update to latest `acorn-6to5`.
-
-## 1.12.5
-
- * Fix excessive whitespace trimming resulting in innaccurate sourcemap line.
-
-## 1.12.4
-
- * Add `doc` folder for documentation.
-
-## 1.12.3
-
- * Support generator comprehensions.
- * Use `Array.from` instead of `Array.prototype.slice` in spread transformer.
- * Support spread in `NewExpression`s.
-
-## 1.12.2
-
- * Upgrade `matcha` to `0.6.0` and `browserify` to `6.3.2`.
- * Add own `trimRight` helper instead of relying on the string instance method.
- * Support JSX spreads that aren't the first.
-
-## 1.12.1
-
- * Fix `this` and `arguments` mapping in the `_aliasFunctions` transformer.
-
-## 1.12.0
-
- * Combine `jsx` and `react` transformers to `react`.
- * Update `react` syntax output to React v0.12.
-
-## 1.11.15
-
- * Fix JSX literal whitespace generation.
-
-## 1.11.14
-
- * Avoid using a switch for let-scoping continue and break statements and use an if statement instead.
- * Remove excess whitespace and newlines from JSX literals.
-
-## 1.11.13
-
- * Update regenerator-6to5
- * Add support for most escodegen formatting options
+ * 6to5 is now known as Babel.
+ * Global helpers/runtime has now been given the more descriptive name of "external helpers".

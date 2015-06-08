@@ -1,72 +1,85 @@
+MAKEFLAGS = -j1
 BROWSERIFY_CMD = node_modules/browserify/bin/cmd.js
 ISTANBUL_CMD = node_modules/istanbul/lib/cli.js cover
 UGLIFY_CMD = node_modules/uglify-js/bin/uglifyjs
 #UGLIFY_CMD = node_modules/uglify-js/bin/uglifyjs --mangle sort
-JSHINT_CMD = node_modules/jshint/bin/jshint
 MOCHA_CMD = node_modules/mocha/bin/_mocha
-JSCS_CMD = node_modules/jscs/bin/jscs
+BABEL_CMD = node_modules/babel/bin/babel
+BROWSERIFY_IGNORE = -i esprima-fb
 
 export NODE_ENV = test
 
-.PHONY: clean test test-cov test-clean lint test-travis test-simple test-all test-browser publish build bootstrap publish-core publish-runtime
+.PHONY: clean test test-cov test-clean test-travis test-simple test-all test-browser test-parser publish build bootstrap publish-core publish-runtime build-core watch-core build-core-test clean-core
+
+build-core: clean-core
+	node $(BABEL_CMD) src --out-dir lib --copy-files
+
+build-core-test: clean-core
+	node $(BABEL_CMD) src --out-dir lib --copy-files --auxiliary-comment "istanbul ignore next"
+
+watch-core: clean-core
+	node $(BABEL_CMD) src --out-dir lib --watch --copy-files
+
+clean-core:
+	rm -rf lib
+
+lint:
+	eslint src/babel
 
 build:
 	mkdir -p dist
+	make build-core
 
 	node tools/cache-templates
 
-	node $(BROWSERIFY_CMD) -e lib/6to5/polyfill.js >dist/polyfill.js
+	node $(BROWSERIFY_CMD) -e lib/babel/polyfill.js >dist/polyfill.js
 	node $(UGLIFY_CMD) dist/polyfill.js >dist/polyfill.min.js
 
-	node $(BROWSERIFY_CMD) lib/6to5/browser.js -s to5 >dist/6to5.js
-	node $(UGLIFY_CMD) dist/6to5.js >dist/6to5.min.js
+	node $(BROWSERIFY_CMD) lib/babel/api/browser.js -s babel $(BROWSERIFY_IGNORE) >dist/browser.js
+	node $(UGLIFY_CMD) dist/browser.js >dist/browser.min.js
+
+	node $(BROWSERIFY_CMD) lib/babel/api/node.js --node $(BROWSERIFY_IGNORE) >dist/node.js
+
+	node packages/babel-cli/bin/babel-external-helpers >dist/external-helpers.js
+	node $(UGLIFY_CMD) dist/external-helpers.js >dist/external-helpers.min.js
 
 	rm -rf templates.json
 
 clean:
-	rm -rf coverage templates.json test/tmp dist
-
-lint:
-	$(JSHINT_CMD) --reporter node_modules/jshint-stylish/stylish.js lib bin
-	$(JSCS_CMD) lib bin
+	rm -rf coverage templates.json test/tmp dist lib
 
 test-clean:
 	rm -rf test/tmp
 
-test: lint
-	$(MOCHA_CMD)
+test: test-parser
+	node $(MOCHA_CMD) test/core
 	make test-clean
 
-test-simple:
-	# excludes test262
-	export SIMPLE_6TO5_TESTS=1; \
-	make test
-
 test-all:
-	# includes traceur, esnext, regenerator
-	export ALL_6TO5_TESTS=1; \
+	export ALL_BABEL_TESTS=1; \
 	make test
 
 test-cov:
 	rm -rf coverage
-	export SIMPLE_6TO5_TESTS=1; \
-	node $(ISTANBUL_CMD) $(MOCHA_CMD) --
+	make build-core-test
+	node $(ISTANBUL_CMD) $(MOCHA_CMD) -- test/core
 
-test-travis: bootstrap
-	node $(ISTANBUL_CMD) $(MOCHA_CMD) --
-	if test -n "$$CODECLIMATE_REPO_TOKEN"; then codeclimate < coverage/lcov.info; fi
+test-parser:
+	node test/acorn/run.js
+
+test-travis: bootstrap lint build test
 
 test-browser:
 	mkdir -p dist
 
 	node tools/cache-templates
-	node tools/cache-tests
-	node $(BROWSERIFY_CMD) -e test/_browser.js >dist/6to5-test.js
+	node tools/build-tests
+	node $(BROWSERIFY_CMD) -e test/core/_browser.js >dist/babel-test.js
 	rm -rf templates.json tests.json
 
 	test -n "`which open`" && open test/browser.html
 
-publish:
+publish: lint
 	git pull --rebase
 
 	make test
@@ -75,8 +88,15 @@ publish:
 	npm version $$version --message "v%s"
 
 	make build
-	cp dist/6to5.min.js browser.js
-	cp dist/polyfill.min.js browser-polyfill.js
+
+	cp dist/browser.js browser.js
+	cp dist/browser.min.js browser.min.js
+
+	cp dist/polyfill.js browser-polyfill.js
+	cp dist/polyfill.min.js browser-polyfill.min.js
+
+	cp dist/external-helpers.js external-helpers.js
+	cp dist/external-helpers.min.js external-helpers.min.js
 
 	node tools/cache-templates
 	test -f templates.json
@@ -85,28 +105,27 @@ publish:
 
 	git push --follow-tags
 
-	make publish-core
+	make publish-cli
 	make publish-runtime
 
-	rm -rf templates.json browser.js browser-polyfill.js
+	rm -rf templates.json browser.js browser.min.js browser-polyfill.js browser-polyfill.min.js external-helpers.js external-helpers.min.js
 
 publish-runtime:
 	cd packages; \
 	node build-runtime.js; \
-	cd 6to5-runtime; \
+	cd babel-runtime; \
 	npm publish
 
-publish-core:
-	tools/generate-core-package-json >package2.json
-	mv package.json .package.json
-	mv package2.json package.json
-
+publish-cli:
+	cd packages; \
+	node build-cli.js; \
+	cd babel-cli; \
 	npm publish
-
-	rm -rf package.json
-	mv .package.json package.json
 
 bootstrap:
+	npm list --global --depth 1 babel >/dev/null 2>&1 && npm uninstall -g babel || true
 	npm install
+	npm link
+	cd packages/babel-cli && npm install && npm link && npm link babel-core
 	git submodule update --init
-	cd vendor/regenerator; npm install
+	make build
